@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <cstdio>
+#include <cmath>
 #include <algorithm>
 #include "ncbind.hpp"
 
