@@ -1,4 +1,4 @@
-#include "ncbind.hpp"
+#include "ncbind/ncbind.hpp"
 
 static tjs_uint32 posHint, sizeHint, addHint, getTextWidthHint;
 
@@ -34,19 +34,19 @@ tTJSVariant table_find_list_range(tTJSVariant list, tjs_int pos, tjs_int size)
     mid = int((begin + end) / 2);
     tTJSVariant item = listObj.GetValue(mid, ncbTypedefs::Tag<tTJSVariant>());
     ncbPropAccessor itemObj(item);
-    tjs_int itemPos = itemObj.GetValue(L"pos", ncbTypedefs::Tag<tjs_int>(), 8, &posHint);
-    tjs_int itemSize = itemObj.GetValue(L"size", ncbTypedefs::Tag<tjs_int>(), 8, &sizeHint);
+    tjs_int itemPos = itemObj.GetValue(TJS_W("pos"), ncbTypedefs::Tag<tjs_int>(), 8, &posHint);
+    tjs_int itemSize = itemObj.GetValue(TJS_W("size"), ncbTypedefs::Tag<tjs_int>(), 8, &sizeHint);
 
     if (itemPos <= pos && pos < itemPos + itemSize) {
       ncbPropAccessor resultObj(result);
-      resultObj.FuncCall(0, L"add", &addHint, NULL, item);
+      resultObj.FuncCall(0, TJS_W("add"), &addHint, NULL, item);
       for (tjs_int i = mid + 1; i < listCount; i++) {
         tTJSVariant aItem = listObj.GetValue(i, ncbTypedefs::Tag<tTJSVariant>());
         ncbPropAccessor aItemObj(aItem);
-        tjs_int aItemPos = aItemObj.GetValue(L"pos", ncbTypedefs::Tag<tjs_int>(), 8, &posHint);
+        tjs_int aItemPos = aItemObj.GetValue(TJS_W("pos"), ncbTypedefs::Tag<tjs_int>(), 8, &posHint);
         if (aItemPos >= pos + size)
           break;
-        resultObj.FuncCall(0, L"add", &addHint, NULL, aItem);
+        resultObj.FuncCall(0, TJS_W("add"), &addHint, NULL, aItem);
       }
       return result;
     }
@@ -63,7 +63,7 @@ ttstr substr_ttstr(ttstr src, tjs_int index, tjs_int length)
 {
   if (length <= 0
       || index >= src.length())
-    return L"";
+    return TJS_W("");
   if (index + length > src.length())
     length = src.length() - index;
   return ttstr(src.c_str() + index, length);
@@ -73,7 +73,7 @@ tjs_int getTextWidth(tTJSVariant font, ttstr text)
 {
   ncbPropAccessor fontObj(font);
   tTJSVariant result;
-  fontObj.FuncCall(0, L"getTextWidth", &getTextWidthHint, &result, text);
+  fontObj.FuncCall(0, TJS_W("getTextWidth"), &getTextWidthHint, &result, text);
   return tjs_int(result);
 }
 

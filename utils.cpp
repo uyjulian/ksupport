@@ -3,16 +3,18 @@
 //
 
 
+#if 0
 #include <windows.h>
 #undef max
 #undef min
+#endif
 
 #include <cmath>
 #include <cfloat>
 #include <vector>
 #include <algorithm>
 #include <iterator>
-#include "ncbind.hpp"
+#include "ncbind/ncbind.hpp"
 
 
 //----------------------------------------------------------------------
@@ -103,17 +105,17 @@ bool equalStruct(tTJSVariant v1, tTJSVariant v2)
     tTJSVariantClosure &o2 = v2.AsObjectClosureNoAddRef();
     
     // 関数どうしなら特別扱いで関数比較
-    if (o1.IsInstanceOf(0, NULL, NULL, L"Function", NULL)== TJS_S_TRUE
-	&& o2.IsInstanceOf(0, NULL, NULL, L"Function", NULL)== TJS_S_TRUE)
+    if (o1.IsInstanceOf(0, NULL, NULL, TJS_W("Function"), NULL)== TJS_S_TRUE
+	&& o2.IsInstanceOf(0, NULL, NULL, TJS_W("Function"), NULL)== TJS_S_TRUE)
       return v1.DiscernCompare(v2);
 
     // Arrayどうしなら全項目を比較
-    if (o1.IsInstanceOf(0, NULL, NULL, L"Array", NULL)== TJS_S_TRUE
-	&& o2.IsInstanceOf(0, NULL, NULL, L"Array", NULL)== TJS_S_TRUE) {
+    if (o1.IsInstanceOf(0, NULL, NULL, TJS_W("Array"), NULL)== TJS_S_TRUE
+	&& o2.IsInstanceOf(0, NULL, NULL, TJS_W("Array"), NULL)== TJS_S_TRUE) {
       // 長さが一致していなければ比較失敗
       tTJSVariant o1Count, o2Count;
-      (void)o1.PropGet(0, L"count", &countHint, &o1Count, NULL);
-      (void)o2.PropGet(0, L"count", &countHint, &o2Count, NULL);
+      (void)o1.PropGet(0, TJS_W("count"), &countHint, &o1Count, NULL);
+      (void)o2.PropGet(0, TJS_W("count"), &countHint, &o2Count, NULL);
       if (! o1Count.DiscernCompare(o2Count))
 	return false;
       // 全項目を順番に比較
@@ -129,8 +131,8 @@ bool equalStruct(tTJSVariant v1, tTJSVariant v2)
     }
 
     // Dictionaryどうしなら全項目を比較
-    if (o1.IsInstanceOf(0, NULL, NULL, L"Dictionary", NULL)== TJS_S_TRUE
-	&& o2.IsInstanceOf(0, NULL, NULL, L"Dictionary", NULL)== TJS_S_TRUE) {
+    if (o1.IsInstanceOf(0, NULL, NULL, TJS_W("Dictionary"), NULL)== TJS_S_TRUE
+	&& o2.IsInstanceOf(0, NULL, NULL, TJS_W("Dictionary"), NULL)== TJS_S_TRUE) {
       // 項目数が一致していなければ比較失敗
       tjs_int o1Count, o2Count;
       (void)o1.GetCount(&o1Count, NULL, NULL, NULL);
@@ -206,19 +208,19 @@ bool equalStructNumericLoose(tTJSVariant v1, tTJSVariant v2)
     tTJSVariantClosure &o2 = v2.AsObjectClosureNoAddRef();
     
     // 関数どうしなら特別扱いで関数比較
-    if (o1.IsInstanceOf(0, NULL, NULL, L"Function", NULL)== TJS_S_TRUE
-        && o2.IsInstanceOf(0, NULL, NULL, L"Function", NULL)== TJS_S_TRUE) {
+    if (o1.IsInstanceOf(0, NULL, NULL, TJS_W("Function"), NULL)== TJS_S_TRUE
+        && o2.IsInstanceOf(0, NULL, NULL, TJS_W("Function"), NULL)== TJS_S_TRUE) {
 
       return v1.DiscernCompare(v2);
     }
 
     // Arrayどうしなら全項目を比較
-    if (o1.IsInstanceOf(0, NULL, NULL, L"Array", NULL)== TJS_S_TRUE
-	&& o2.IsInstanceOf(0, NULL, NULL, L"Array", NULL)== TJS_S_TRUE) {
+    if (o1.IsInstanceOf(0, NULL, NULL, TJS_W("Array"), NULL)== TJS_S_TRUE
+	&& o2.IsInstanceOf(0, NULL, NULL, TJS_W("Array"), NULL)== TJS_S_TRUE) {
       // 長さが一致していなければ比較失敗
       tTJSVariant o1Count, o2Count;
-      (void)o1.PropGet(0, L"count", &countHint, &o1Count, NULL);
-      (void)o2.PropGet(0, L"count", &countHint, &o2Count, NULL);
+      (void)o1.PropGet(0, TJS_W("count"), &countHint, &o1Count, NULL);
+      (void)o2.PropGet(0, TJS_W("count"), &countHint, &o2Count, NULL);
       if (! o1Count.DiscernCompare(o2Count)) {
         return false;
       }
@@ -236,8 +238,8 @@ bool equalStructNumericLoose(tTJSVariant v1, tTJSVariant v2)
     }
 
     // Dictionaryどうしなら全項目を比較
-    if (o1.IsInstanceOf(0, NULL, NULL, L"Dictionary", NULL)== TJS_S_TRUE
-	&& o2.IsInstanceOf(0, NULL, NULL, L"Dictionary", NULL)== TJS_S_TRUE) {
+    if (o1.IsInstanceOf(0, NULL, NULL, TJS_W("Dictionary"), NULL)== TJS_S_TRUE
+	&& o2.IsInstanceOf(0, NULL, NULL, TJS_W("Dictionary"), NULL)== TJS_S_TRUE) {
       // 項目数が一致していなければ比較失敗
       tjs_int o1Count, o2Count;
       (void)o1.GetCount(&o1Count, NULL, NULL, NULL);
@@ -374,7 +376,7 @@ tTJSVariant arrayHash(tTJSVariant array)
   tTJSVariantClosure &dst = result.AsObjectClosureNoAddRef();
 
   tTJSVariant arrayCount;
-  (void)src.PropGet(0, L"count", &countHint, &arrayCount, NULL);
+  (void)src.PropGet(0, TJS_W("count"), &countHint, &arrayCount, NULL);
   tjs_int count = arrayCount;
   tTJSVariant key;
   tTJSVariant value(true);
@@ -443,7 +445,7 @@ void array_to_vector(tTJSVariant &array, std::vector<tTJSVariant> &vec)
 {
   tTJSVariantClosure &obj = array.AsObjectClosureNoAddRef();
   tTJSVariant objCount;
-  (void)obj.PropGet(0, L"count", &countHint, &objCount, NULL);
+  (void)obj.PropGet(0, TJS_W("count"), &countHint, &objCount, NULL);
   tjs_int count = objCount;
   vec.reserve(count);
   tTJSVariant value;
@@ -544,7 +546,7 @@ tTJSVariant sliceArray(tTJSVariant v, tjs_int from, tjs_int size)
 {
   tTJSVariantClosure &src = v.AsObjectClosureNoAddRef();
   tTJSVariant srcCount;
-  (void)src.PropGet(0, L"count", &countHint, &srcCount, NULL);
+  (void)src.PropGet(0, TJS_W("count"), &countHint, &srcCount, NULL);
   tjs_int count = srcCount;
 
   tTJSVariant result = createArray();
@@ -577,7 +579,7 @@ tjs_error TJS_INTF_METHOD eachArray(tTJSVariant *result,
     paramList[i] = param[i];
 
   tTJSVariant arrayCount;
-  (void)array.PropGet(0, L"count", &countHint, &arrayCount, NULL);
+  (void)array.PropGet(0, TJS_W("count"), &countHint, &arrayCount, NULL);
   tjs_int count = arrayCount;
 
   for (tjs_int i = 0; i < count; i++) {

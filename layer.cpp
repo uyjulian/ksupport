@@ -3,13 +3,15 @@
 //
 
 
+#if 0
 #define NOMINMAX
 #include <windows.h>
+#endif
 
 #include <cstdio>
 #include <cmath>
 #include <algorithm>
-#include "ncbind.hpp"
+#include "ncbind/ncbind.hpp"
 
 
 //----------------------------------------------------------------------
@@ -122,7 +124,7 @@ public:
     rgb.b = b;
     rgb_to_hsv(&rgb, &hsv);
     char buf[256];
-    sprintf_s(buf, "%%[h:%d,s:%d,v:%d]", tjs_int(hsv.h), tjs_int(hsv.s), tjs_int(hsv.v));
+    sprintf(buf, "%%[h:%d,s:%d,v:%d]", tjs_int(hsv.h), tjs_int(hsv.s), tjs_int(hsv.v));
     tTJSVariant result;
     TVPExecuteExpression(ttstr(buf), &result);
     return result;
@@ -136,7 +138,7 @@ public:
     hsv.v = v;
     hsv_to_rgb(&hsv, &rgb);
     char buf[256];
-    sprintf_s(buf, "%%[r:%d,g:%d,b:%d]", rgb.r, rgb.g, rgb.b);
+    sprintf(buf, "%%[r:%d,g:%d,b:%d]", rgb.r, rgb.g, rgb.b);
     tTJSVariant result;
     TVPExecuteExpression(ttstr(buf), &result);
     return result;
@@ -180,10 +182,10 @@ public:
       v_const = double(v.AsInteger());
     }
 
-    width = layerObj.GetValue(L"width",  ncbTypedefs::Tag<tjs_int>());
-    height = layerObj.GetValue(L"height",  ncbTypedefs::Tag<tjs_int>());
-    pitch = layerObj.GetValue(L"mainImageBufferPitch", ncbTypedefs::Tag<tjs_int>());
-    imageBuffer = reinterpret_cast<unsigned char*>(layerObj.GetValue(L"mainImageBufferForWrite", ncbTypedefs::Tag<tjs_int64>()));
+    width = layerObj.GetValue(TJS_W("width"),  ncbTypedefs::Tag<tjs_int>());
+    height = layerObj.GetValue(TJS_W("height"),  ncbTypedefs::Tag<tjs_int>());
+    pitch = layerObj.GetValue(TJS_W("mainImageBufferPitch"), ncbTypedefs::Tag<tjs_int>());
+    imageBuffer = reinterpret_cast<unsigned char*>(layerObj.GetValue(TJS_W("mainImageBufferForWrite"), ncbTypedefs::Tag<tjs_int64>()));
 
     for (tjs_int y = 0; y < height; y++) {
       unsigned char *p = imageBuffer;
@@ -251,10 +253,10 @@ public:
       b_const = tjs_int(b.AsInteger());
     }
 
-    width = layerObj.GetValue(L"width",  ncbTypedefs::Tag<tjs_int>());
-    height = layerObj.GetValue(L"height",  ncbTypedefs::Tag<tjs_int>());
-    pitch = layerObj.GetValue(L"mainImageBufferPitch", ncbTypedefs::Tag<tjs_int>());
-    imageBuffer = reinterpret_cast<unsigned char*>(layerObj.GetValue(L"mainImageBufferForWrite", ncbTypedefs::Tag<tjs_int64>()));
+    width = layerObj.GetValue(TJS_W("width"),  ncbTypedefs::Tag<tjs_int>());
+    height = layerObj.GetValue(TJS_W("height"),  ncbTypedefs::Tag<tjs_int>());
+    pitch = layerObj.GetValue(TJS_W("mainImageBufferPitch"), ncbTypedefs::Tag<tjs_int>());
+    imageBuffer = reinterpret_cast<unsigned char*>(layerObj.GetValue(TJS_W("mainImageBufferForWrite"), ncbTypedefs::Tag<tjs_int64>()));
 
     for (tjs_int y = 0; y < height; y++) {
       unsigned char *p = imageBuffer;
@@ -298,16 +300,16 @@ public:
                        tjs_int shiftLeft, tjs_int shiftTop) {
     ncbPropAccessor dstObj(mObjthis), srcObj(src);
     tjs_int dright = dleft + dwidth, dbottom = dtop + dheight;
-    dleft = std::max(dleft, dstObj.GetValue(L"clipLeft", ncbTypedefs::Tag<tjs_int>()));
-    dtop = std::max(dtop, dstObj.GetValue(L"clipTop", ncbTypedefs::Tag<tjs_int>()));
-    dright = std::min(dright, dstObj.GetValue(L"clipLeft", ncbTypedefs::Tag<tjs_int>()) + dstObj.GetValue(L"clipWidth", ncbTypedefs::Tag<tjs_int>()));
-    dbottom = std::min(dbottom, dstObj.GetValue(L"clipTop", ncbTypedefs::Tag<tjs_int>()) + dstObj.GetValue(L"clipHeight", ncbTypedefs::Tag<tjs_int>()));
+    dleft = std::max(dleft, dstObj.GetValue(TJS_W("clipLeft"), ncbTypedefs::Tag<tjs_int>()));
+    dtop = std::max(dtop, dstObj.GetValue(TJS_W("clipTop"), ncbTypedefs::Tag<tjs_int>()));
+    dright = std::min(dright, dstObj.GetValue(TJS_W("clipLeft"), ncbTypedefs::Tag<tjs_int>()) + dstObj.GetValue(TJS_W("clipWidth"), ncbTypedefs::Tag<tjs_int>()));
+    dbottom = std::min(dbottom, dstObj.GetValue(TJS_W("clipTop"), ncbTypedefs::Tag<tjs_int>()) + dstObj.GetValue(TJS_W("clipHeight"), ncbTypedefs::Tag<tjs_int>()));
     dwidth = dright - dleft;
     dheight = dbottom - dtop;
-    tjs_int dstPitch = dstObj.GetValue(L"mainImageBufferPitch", ncbTypedefs::Tag<tjs_int>());
-    unsigned char *dstBuffer = reinterpret_cast<unsigned char*>(dstObj.GetValue(L"mainImageBufferForWrite", ncbTypedefs::Tag<tjs_int64>()));
-    tjs_int srcPitch = srcObj.GetValue(L"mainImageBufferPitch", ncbTypedefs::Tag<tjs_int>());
-    const unsigned char *srcBuffer = reinterpret_cast<const unsigned char*>(srcObj.GetValue(L"mainImageBuffer", ncbTypedefs::Tag<tjs_int64>()));
+    tjs_int dstPitch = dstObj.GetValue(TJS_W("mainImageBufferPitch"), ncbTypedefs::Tag<tjs_int>());
+    unsigned char *dstBuffer = reinterpret_cast<unsigned char*>(dstObj.GetValue(TJS_W("mainImageBufferForWrite"), ncbTypedefs::Tag<tjs_int64>()));
+    tjs_int srcPitch = srcObj.GetValue(TJS_W("mainImageBufferPitch"), ncbTypedefs::Tag<tjs_int>());
+    const unsigned char *srcBuffer = reinterpret_cast<const unsigned char*>(srcObj.GetValue(TJS_W("mainImageBuffer"), ncbTypedefs::Tag<tjs_int64>()));
     for (tjs_int y = dtop; y < dbottom; y++) {
       unsigned char *dst = dstBuffer + dstPitch * y + dleft * 4;
       const unsigned char *srcBase = srcBuffer + (stop + wrap_mod(shiftTop + y,  sheight)) * srcPitch;
@@ -336,15 +338,15 @@ public:
 
     tjs_int layerWidth, layerHeight, pitch;
     unsigned char *imageBuffer;
-    layerWidth = layerObj.GetValue(L"width",  ncbTypedefs::Tag<tjs_int>());
-    layerHeight = layerObj.GetValue(L"height",  ncbTypedefs::Tag<tjs_int>());
-    pitch = layerObj.GetValue(L"mainImageBufferPitch", ncbTypedefs::Tag<tjs_int>());
-    imageBuffer = reinterpret_cast<unsigned char*>(layerObj.GetValue(L"mainImageBufferForWrite", ncbTypedefs::Tag<tjs_int64>()));
+    layerWidth = layerObj.GetValue(TJS_W("width"),  ncbTypedefs::Tag<tjs_int>());
+    layerHeight = layerObj.GetValue(TJS_W("height"),  ncbTypedefs::Tag<tjs_int>());
+    pitch = layerObj.GetValue(TJS_W("mainImageBufferPitch"), ncbTypedefs::Tag<tjs_int>());
+    imageBuffer = reinterpret_cast<unsigned char*>(layerObj.GetValue(TJS_W("mainImageBufferForWrite"), ncbTypedefs::Tag<tjs_int64>()));
     tjs_int clipLeft, clipTop, clipWidth, clipHeight;
-    clipLeft = layerObj.GetValue(L"clipLeft", ncbTypedefs::Tag<tjs_int>());
-    clipTop = layerObj.GetValue(L"clipTop", ncbTypedefs::Tag<tjs_int>());
-    clipWidth = layerObj.GetValue(L"clipWidth", ncbTypedefs::Tag<tjs_int>());
-    clipHeight = layerObj.GetValue(L"clipHeight", ncbTypedefs::Tag<tjs_int>());
+    clipLeft = layerObj.GetValue(TJS_W("clipLeft"), ncbTypedefs::Tag<tjs_int>());
+    clipTop = layerObj.GetValue(TJS_W("clipTop"), ncbTypedefs::Tag<tjs_int>());
+    clipWidth = layerObj.GetValue(TJS_W("clipWidth"), ncbTypedefs::Tag<tjs_int>());
+    clipHeight = layerObj.GetValue(TJS_W("clipHeight"), ncbTypedefs::Tag<tjs_int>());
     
     tjs_int fromX = std::max(clipLeft, left);
     tjs_int toX = std::min(clipLeft + clipWidth, left + width);
@@ -392,15 +394,15 @@ public:
 
     tjs_int layerWidth, layerHeight, pitch;
     unsigned char *imageBuffer;
-    layerWidth = layerObj.GetValue(L"width",  ncbTypedefs::Tag<tjs_int>());
-    layerHeight = layerObj.GetValue(L"height",  ncbTypedefs::Tag<tjs_int>());
-    pitch = layerObj.GetValue(L"mainImageBufferPitch", ncbTypedefs::Tag<tjs_int>());
-    imageBuffer = reinterpret_cast<unsigned char*>(layerObj.GetValue(L"mainImageBufferForWrite", ncbTypedefs::Tag<tjs_int64>()));
+    layerWidth = layerObj.GetValue(TJS_W("width"),  ncbTypedefs::Tag<tjs_int>());
+    layerHeight = layerObj.GetValue(TJS_W("height"),  ncbTypedefs::Tag<tjs_int>());
+    pitch = layerObj.GetValue(TJS_W("mainImageBufferPitch"), ncbTypedefs::Tag<tjs_int>());
+    imageBuffer = reinterpret_cast<unsigned char*>(layerObj.GetValue(TJS_W("mainImageBufferForWrite"), ncbTypedefs::Tag<tjs_int64>()));
     tjs_int clipLeft, clipTop, clipWidth, clipHeight;
-    clipLeft = layerObj.GetValue(L"clipLeft", ncbTypedefs::Tag<tjs_int>());
-    clipTop = layerObj.GetValue(L"clipTop", ncbTypedefs::Tag<tjs_int>());
-    clipWidth = layerObj.GetValue(L"clipWidth", ncbTypedefs::Tag<tjs_int>());
-    clipHeight = layerObj.GetValue(L"clipHeight", ncbTypedefs::Tag<tjs_int>());
+    clipLeft = layerObj.GetValue(TJS_W("clipLeft"), ncbTypedefs::Tag<tjs_int>());
+    clipTop = layerObj.GetValue(TJS_W("clipTop"), ncbTypedefs::Tag<tjs_int>());
+    clipWidth = layerObj.GetValue(TJS_W("clipWidth"), ncbTypedefs::Tag<tjs_int>());
+    clipHeight = layerObj.GetValue(TJS_W("clipHeight"), ncbTypedefs::Tag<tjs_int>());
     
     tjs_int fromX = std::max(clipLeft, left);
     tjs_int toX = std::min(clipLeft + clipWidth, left + width);
@@ -423,8 +425,8 @@ public:
       r = blendColor(r0, r1, f, height);
       g = blendColor(g0, g1, f, height);
       b = blendColor(b0, b1, f, height);
-      DWORD color = (a << 24) | (r << 16) | (g << 8) | b;
-      DWORD *dst = (DWORD*)(imageBuffer + y * pitch + fromX * 4);
+      tjs_uint32 color = (a << 24) | (r << 16) | (g << 8) | b;
+      tjs_uint32 *dst = (tjs_uint32*)(imageBuffer + y * pitch + fromX * 4);
       for (tjs_int x = fromX; x < toX; x++) 
         *dst++ = color;
     }
@@ -442,15 +444,15 @@ public:
 
     tjs_int layerWidth, layerHeight, pitch;
     unsigned char *imageBuffer;
-    layerWidth = layerObj.GetValue(L"width",  ncbTypedefs::Tag<tjs_int>());
-    layerHeight = layerObj.GetValue(L"height",  ncbTypedefs::Tag<tjs_int>());
-    pitch = layerObj.GetValue(L"mainImageBufferPitch", ncbTypedefs::Tag<tjs_int>());
-    imageBuffer = reinterpret_cast<unsigned char*>(layerObj.GetValue(L"mainImageBufferForWrite", ncbTypedefs::Tag<tjs_int64>()));
+    layerWidth = layerObj.GetValue(TJS_W("width"),  ncbTypedefs::Tag<tjs_int>());
+    layerHeight = layerObj.GetValue(TJS_W("height"),  ncbTypedefs::Tag<tjs_int>());
+    pitch = layerObj.GetValue(TJS_W("mainImageBufferPitch"), ncbTypedefs::Tag<tjs_int>());
+    imageBuffer = reinterpret_cast<unsigned char*>(layerObj.GetValue(TJS_W("mainImageBufferForWrite"), ncbTypedefs::Tag<tjs_int64>()));
     tjs_int clipLeft, clipTop, clipWidth, clipHeight;
-    clipLeft = layerObj.GetValue(L"clipLeft", ncbTypedefs::Tag<tjs_int>());
-    clipTop = layerObj.GetValue(L"clipTop", ncbTypedefs::Tag<tjs_int>());
-    clipWidth = layerObj.GetValue(L"clipWidth", ncbTypedefs::Tag<tjs_int>());
-    clipHeight = layerObj.GetValue(L"clipHeight", ncbTypedefs::Tag<tjs_int>());
+    clipLeft = layerObj.GetValue(TJS_W("clipLeft"), ncbTypedefs::Tag<tjs_int>());
+    clipTop = layerObj.GetValue(TJS_W("clipTop"), ncbTypedefs::Tag<tjs_int>());
+    clipWidth = layerObj.GetValue(TJS_W("clipWidth"), ncbTypedefs::Tag<tjs_int>());
+    clipHeight = layerObj.GetValue(TJS_W("clipHeight"), ncbTypedefs::Tag<tjs_int>());
     
     tjs_int fromX = std::max(clipLeft, left);
     tjs_int toX = std::min(clipLeft + clipWidth, left + width);
@@ -501,15 +503,15 @@ public:
 
     tjs_int layerWidth, layerHeight, pitch;
     unsigned char *imageBuffer;
-    layerWidth = layerObj.GetValue(L"width",  ncbTypedefs::Tag<tjs_int>());
-    layerHeight = layerObj.GetValue(L"height",  ncbTypedefs::Tag<tjs_int>());
-    pitch = layerObj.GetValue(L"mainImageBufferPitch", ncbTypedefs::Tag<tjs_int>());
-    imageBuffer = reinterpret_cast<unsigned char*>(layerObj.GetValue(L"mainImageBufferForWrite", ncbTypedefs::Tag<tjs_int64>()));
+    layerWidth = layerObj.GetValue(TJS_W("width"),  ncbTypedefs::Tag<tjs_int>());
+    layerHeight = layerObj.GetValue(TJS_W("height"),  ncbTypedefs::Tag<tjs_int>());
+    pitch = layerObj.GetValue(TJS_W("mainImageBufferPitch"), ncbTypedefs::Tag<tjs_int>());
+    imageBuffer = reinterpret_cast<unsigned char*>(layerObj.GetValue(TJS_W("mainImageBufferForWrite"), ncbTypedefs::Tag<tjs_int64>()));
     tjs_int clipLeft, clipTop, clipWidth, clipHeight;
-    clipLeft = layerObj.GetValue(L"clipLeft", ncbTypedefs::Tag<tjs_int>());
-    clipTop = layerObj.GetValue(L"clipTop", ncbTypedefs::Tag<tjs_int>());
-    clipWidth = layerObj.GetValue(L"clipWidth", ncbTypedefs::Tag<tjs_int>());
-    clipHeight = layerObj.GetValue(L"clipHeight", ncbTypedefs::Tag<tjs_int>());
+    clipLeft = layerObj.GetValue(TJS_W("clipLeft"), ncbTypedefs::Tag<tjs_int>());
+    clipTop = layerObj.GetValue(TJS_W("clipTop"), ncbTypedefs::Tag<tjs_int>());
+    clipWidth = layerObj.GetValue(TJS_W("clipWidth"), ncbTypedefs::Tag<tjs_int>());
+    clipHeight = layerObj.GetValue(TJS_W("clipHeight"), ncbTypedefs::Tag<tjs_int>());
     
     tjs_int fromX = std::max(clipLeft, left);
     tjs_int toX = std::min(clipLeft + clipWidth, left + width);

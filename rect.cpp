@@ -5,7 +5,7 @@
 
 #include <vector>
 #include <algorithm>
-#include "ncbind.hpp"
+#include "ncbind/ncbind.hpp"
 
 
 /**------------------------------
@@ -288,7 +288,7 @@ public:
       assignRegion(region);
       return;
     }
-    TVPThrowExceptionMessage(L"invalid argumen for function");
+    TVPThrowExceptionMessage(TJS_W("invalid argumen for function"));
   }
 
   /**------------------------------
@@ -309,7 +309,7 @@ public:
       includeRegion(region);
       return;
     }
-    TVPThrowExceptionMessage(L"invalid argumen for function");
+    TVPThrowExceptionMessage(TJS_W("invalid argumen for function"));
   }
 
   /**------------------------------
@@ -330,7 +330,7 @@ public:
       excludeRegion(region);
       return;
     }
-    TVPThrowExceptionMessage(L"invalid argumen for function");
+    TVPThrowExceptionMessage(TJS_W("invalid argumen for function"));
   }
 
   /**------------------------------
@@ -351,7 +351,7 @@ public:
       intersectWithRegion(region);
       return;
     }
-    TVPThrowExceptionMessage(L"invalid argumen for function");
+    TVPThrowExceptionMessage(TJS_W("invalid argumen for function"));
   }
 
   /**------------------------------

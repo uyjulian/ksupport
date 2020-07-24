@@ -4,7 +4,7 @@
 
 
 
-#include "ncbind.hpp"
+#include "ncbind/ncbind.hpp"
 
 ///----------------------------------------------------------------------
 /// 変数
@@ -43,7 +43,7 @@ tjs_int timeline_find_frame(tTJSVariant frameList, tjs_int time, bool includeTai
   if (end) {
     tTJSVariant lastFrame = frameListObj.GetValue(end - 1, ncbTypedefs::Tag<tTJSVariant>());
     ncbPropAccessor lastFrameObj(lastFrame);
-    tjs_int lastTime = lastFrameObj.GetValue(L"time", ncbTypedefs::Tag<tjs_int>(), 0, &timeHint);
+    tjs_int lastTime = lastFrameObj.GetValue(TJS_W("time"), ncbTypedefs::Tag<tjs_int>(), 0, &timeHint);
 
     if (! includeTail) {
       if (lastTime == time)
@@ -62,12 +62,12 @@ tjs_int timeline_find_frame(tTJSVariant frameList, tjs_int time, bool includeTai
 
     tTJSVariant curFrame = frameListObj.GetValue(mid, ncbTypedefs::Tag<tTJSVariant>());
     ncbPropAccessor curFrameObj(curFrame);
-    tjs_int curTime = curFrameObj.GetValue(L"time", ncbTypedefs::Tag<tjs_int>(), 0, &timeHint);
+    tjs_int curTime = curFrameObj.GetValue(TJS_W("time"), ncbTypedefs::Tag<tjs_int>(), 0, &timeHint);
 
     if (curTime <= time) {
       tTJSVariant nextFrame = frameListObj.GetValue(mid + 1, ncbTypedefs::Tag<tTJSVariant>());
       ncbPropAccessor nextFrameObj(nextFrame);
-      tjs_int nextTime = nextFrameObj.GetValue(L"time", ncbTypedefs::Tag<tjs_int>(), 0, &timeHint);
+      tjs_int nextTime = nextFrameObj.GetValue(TJS_W("time"), ncbTypedefs::Tag<tjs_int>(), 0, &timeHint);
       if (time < nextTime)
 	return mid;
     }
@@ -88,16 +88,16 @@ void timeline_draw_bg(tTJSVariant item, tTJSVariant view, tjs_int y, tjs_int fro
   ncbPropAccessor itemObj(item);
   ncbPropAccessor viewObj(view);
 
-  ncbPropAccessor rootObj(itemObj.GetValue(L"root", ncbTypedefs::Tag<tTJSVariant>(), 0, &rootHint));
-  ncbPropAccessor ownerObj(rootObj.GetValue(L"owner", ncbTypedefs::Tag<tTJSVariant>(), 0, &ownerHint));
-  tjs_int fps = ownerObj.GetValue(L"framePerSecond", ncbTypedefs::Tag<tjs_int>(), 0 ,&framePerSecondHint);
+  ncbPropAccessor rootObj(itemObj.GetValue(TJS_W("root"), ncbTypedefs::Tag<tTJSVariant>(), 0, &rootHint));
+  ncbPropAccessor ownerObj(rootObj.GetValue(TJS_W("owner"), ncbTypedefs::Tag<tTJSVariant>(), 0, &ownerHint));
+  tjs_int fps = ownerObj.GetValue(TJS_W("framePerSecond"), ncbTypedefs::Tag<tjs_int>(), 0 ,&framePerSecondHint);
 
   iTJSDispatch2 *global = TVPGetScriptDispatch();
   ncbPropAccessor globalObj(global);
   global->Release();
 
-  tjs_int TIMELINE_FRAME_WIDTH = itemObj.GetValue(L"TIMELINE_FRAME_WIDTH", ncbTypedefs::Tag<tjs_int>(), 0, &timeLineFrameWidthHint);
-  tjs_int TIMELINE_FRAME_HEIGHT = globalObj.GetValue(L"TIMELINE_FRAME_HEIGHT", ncbTypedefs::Tag<tjs_int>(), 0, &timelineFrameHeightHint);
+  tjs_int TIMELINE_FRAME_WIDTH = itemObj.GetValue(TJS_W("TIMELINE_FRAME_WIDTH"), ncbTypedefs::Tag<tjs_int>(), 0, &timeLineFrameWidthHint);
+  tjs_int TIMELINE_FRAME_HEIGHT = globalObj.GetValue(TJS_W("TIMELINE_FRAME_HEIGHT"), ncbTypedefs::Tag<tjs_int>(), 0, &timelineFrameHeightHint);
 
   tTJSVariant oneSecondFrameBgLayer, halfSecondFrameBgLayer, fifthFrameBgLayer, normalFrameBgLayer;
 
@@ -107,22 +107,22 @@ void timeline_draw_bg(tTJSVariant item, tTJSVariant view, tjs_int y, tjs_int fro
     tTJSVariant layer;
     if (time % fps == 0) {
       if (oneSecondFrameBgLayer.Type() == tvtVoid)
-        oneSecondFrameBgLayer = viewObj.GetValue(L"oneSecondFrameBgLayer", ncbTypedefs::Tag<tTJSVariant>(), 0, &oneSecondFrameBgLayerHint);
+        oneSecondFrameBgLayer = viewObj.GetValue(TJS_W("oneSecondFrameBgLayer"), ncbTypedefs::Tag<tTJSVariant>(), 0, &oneSecondFrameBgLayerHint);
       layer = oneSecondFrameBgLayer;
     } else if (time % fps * 2 == fps) {
       if (halfSecondFrameBgLayer.Type() == tvtVoid)
-        halfSecondFrameBgLayer = viewObj.GetValue(L"halfSecondFrameBgLayer", ncbTypedefs::Tag<tTJSVariant>(), 0, &halfSecondFrameBgLayerHint);
+        halfSecondFrameBgLayer = viewObj.GetValue(TJS_W("halfSecondFrameBgLayer"), ncbTypedefs::Tag<tTJSVariant>(), 0, &halfSecondFrameBgLayerHint);
       layer = halfSecondFrameBgLayer;
     } else if (time % 5 == 0) {
       if (fifthFrameBgLayer.Type() == tvtVoid)
-        fifthFrameBgLayer = viewObj.GetValue(L"fifthFrameBgLayer", ncbTypedefs::Tag<tTJSVariant>(), 0, &fifthFrameBgLayerHint);
+        fifthFrameBgLayer = viewObj.GetValue(TJS_W("fifthFrameBgLayer"), ncbTypedefs::Tag<tTJSVariant>(), 0, &fifthFrameBgLayerHint);
       layer = fifthFrameBgLayer;
     } else {
       if (normalFrameBgLayer.Type() == tvtVoid)
-        normalFrameBgLayer = viewObj.GetValue(L"normalFrameBgLayer", ncbTypedefs::Tag<tTJSVariant>(), 0, &normalFrameBgLayerHint);
+        normalFrameBgLayer = viewObj.GetValue(TJS_W("normalFrameBgLayer"), ncbTypedefs::Tag<tTJSVariant>(), 0, &normalFrameBgLayerHint);
       layer = normalFrameBgLayer;
     }
-    viewObj.FuncCall(0, L"copyRect", &copyRectHint, NULL,
+    viewObj.FuncCall(0, TJS_W("copyRect"), &copyRectHint, NULL,
                      x, y, layer, 0, 0, TIMELINE_FRAME_WIDTH, TIMELINE_FRAME_HEIGHT);
   }
 }
@@ -139,11 +139,11 @@ void timeline_draw_frame(tTJSVariant item, tTJSVariant view, tjs_int y, tTJSVari
   ncbPropAccessor globalObj(global);
   global->Release();
 
-  tjs_int WIN_DARKEN2 = globalObj.GetValue(L"WIN_DARKEN2", ncbTypedefs::Tag<tjs_uint>(), 0, &winDarken2Hint);
-  tjs_int TIMELINE_FRAME_WIDTH = itemObj.GetValue(L"TIMELINE_FRAME_WIDTH", ncbTypedefs::Tag<tjs_int>(), 0, &timeLineFrameWidthHint);
-  tjs_int TIMELINE_FRAME_HEIGHT = globalObj.GetValue(L"TIMELINE_FRAME_HEIGHT", ncbTypedefs::Tag<tjs_int>(), 0, &timelineFrameHeightHint);
-  tjs_int frameType = frameObj.GetValue(L"type", ncbTypedefs::Tag<tjs_int>(), 0, &typeHint);
-  tjs_int frameTime = frameObj.GetValue(L"time", ncbTypedefs::Tag<tjs_int>(), 0, &timeHint);
+  tjs_int WIN_DARKEN2 = globalObj.GetValue(TJS_W("WIN_DARKEN2"), ncbTypedefs::Tag<tjs_uint>(), 0, &winDarken2Hint);
+  tjs_int TIMELINE_FRAME_WIDTH = itemObj.GetValue(TJS_W("TIMELINE_FRAME_WIDTH"), ncbTypedefs::Tag<tjs_int>(), 0, &timeLineFrameWidthHint);
+  tjs_int TIMELINE_FRAME_HEIGHT = globalObj.GetValue(TJS_W("TIMELINE_FRAME_HEIGHT"), ncbTypedefs::Tag<tjs_int>(), 0, &timelineFrameHeightHint);
+  tjs_int frameType = frameObj.GetValue(TJS_W("type"), ncbTypedefs::Tag<tjs_int>(), 0, &typeHint);
+  tjs_int frameTime = frameObj.GetValue(TJS_W("time"), ncbTypedefs::Tag<tjs_int>(), 0, &timeHint);
 
   switch (frameType) {
   case TIMELINE_FRAME_TYPE_NULL:
@@ -152,11 +152,11 @@ void timeline_draw_frame(tTJSVariant item, tTJSVariant view, tjs_int y, tTJSVari
   case TIMELINE_FRAME_TYPE_SINGLE: {
 
     timeline_draw_bg(item, view, y, frameTime + 1, frameTime + length);
-    tjs_int singleFrameLeftColor  = itemObj.GetValue(L"_singleFrameLeftColor", ncbTypedefs::Tag<tjs_int>(), 0, &_singleFrameLeftColorHint);
-    tjs_int singleFrameRightColor  = itemObj.GetValue(L"_singleFrameRightColor", ncbTypedefs::Tag<tjs_int>(), 0, &_singleFrameRightColorHint);
+    tjs_int singleFrameLeftColor  = itemObj.GetValue(TJS_W("_singleFrameLeftColor"), ncbTypedefs::Tag<tjs_int>(), 0, &_singleFrameLeftColorHint);
+    tjs_int singleFrameRightColor  = itemObj.GetValue(TJS_W("_singleFrameRightColor"), ncbTypedefs::Tag<tjs_int>(), 0, &_singleFrameRightColorHint);
     singleFrameLeftColor |= 0xFF000000;
     singleFrameRightColor |= 0xFF000000;
-    viewObj.FuncCall(0, L"fillGradientRectLR", &fillGradientRectLRHint, NULL, 
+    viewObj.FuncCall(0, TJS_W("fillGradientRectLR"), &fillGradientRectLRHint, NULL, 
                      frameTime * TIMELINE_FRAME_WIDTH, y, TIMELINE_FRAME_WIDTH - 1, TIMELINE_FRAME_HEIGHT - 1, singleFrameLeftColor, singleFrameRightColor);
     return;
   }
@@ -164,20 +164,20 @@ void timeline_draw_frame(tTJSVariant item, tTJSVariant view, tjs_int y, tTJSVari
   case TIMELINE_FRAME_TYPE_TWEEN: {
     tjs_int leftColor, rightColor;
     if (frameType == TIMELINE_FRAME_TYPE_CONTINUOUS) {
-      leftColor = itemObj.GetValue(L"_continuousFrameLeftColor", ncbTypedefs::Tag<tjs_int>(), 0, &_continuousFrameLeftColorHint);
-      rightColor = itemObj.GetValue(L"_continuousFrameRightColor", ncbTypedefs::Tag<tjs_int>(), 0, &_continuousFrameRightColorHint);
+      leftColor = itemObj.GetValue(TJS_W("_continuousFrameLeftColor"), ncbTypedefs::Tag<tjs_int>(), 0, &_continuousFrameLeftColorHint);
+      rightColor = itemObj.GetValue(TJS_W("_continuousFrameRightColor"), ncbTypedefs::Tag<tjs_int>(), 0, &_continuousFrameRightColorHint);
     } else {
-      leftColor = itemObj.GetValue(L"_tweenFrameLeftColor", ncbTypedefs::Tag<tjs_int>(), 0, &_tweenFrameLeftColorHint);
-      rightColor = itemObj.GetValue(L"_tweenFrameRightColor", ncbTypedefs::Tag<tjs_int>(), 0, &_tweenFrameRightColorHint);
+      leftColor = itemObj.GetValue(TJS_W("_tweenFrameLeftColor"), ncbTypedefs::Tag<tjs_int>(), 0, &_tweenFrameLeftColorHint);
+      rightColor = itemObj.GetValue(TJS_W("_tweenFrameRightColor"), ncbTypedefs::Tag<tjs_int>(), 0, &_tweenFrameRightColorHint);
     }
     leftColor |= 0xFF000000;
     rightColor |= 0xFF000000;
     // BG描画
-    viewObj.FuncCall(0, L"fillRect", &fillRectHint, NULL,
+    viewObj.FuncCall(0, TJS_W("fillRect"), &fillRectHint, NULL,
 		     (frameTime + length) * TIMELINE_FRAME_WIDTH - 1, y, 1, TIMELINE_FRAME_HEIGHT, WIN_DARKEN2);
-    viewObj.FuncCall(0, L"fillRect", &fillRectHint, NULL,
+    viewObj.FuncCall(0, TJS_W("fillRect"), &fillRectHint, NULL,
 		     frameTime * TIMELINE_FRAME_WIDTH, y + TIMELINE_FRAME_HEIGHT - 1, length * TIMELINE_FRAME_WIDTH, 1, WIN_DARKEN2);
-    viewObj.FuncCall(0, L"fillGradientRectLR", &fillGradientRectLRHint, NULL,
+    viewObj.FuncCall(0, TJS_W("fillGradientRectLR"), &fillGradientRectLRHint, NULL,
                      frameTime * TIMELINE_FRAME_WIDTH, y,
                      length * TIMELINE_FRAME_WIDTH - 1,
                      TIMELINE_FRAME_HEIGHT - 1,
@@ -188,63 +188,63 @@ void timeline_draw_frame(tTJSVariant item, tTJSVariant view, tjs_int y, tTJSVari
       rightMarker = false;
     // 左マーカー描画
     if (leftMarker) {
-      tTJSVariant frameLeftMarkerLayer = viewObj.GetValue(L"frameLeftMarkerLayer", ncbTypedefs::Tag<tTJSVariant>(), 0, &frameLeftMarkerLayerHint);
+      tTJSVariant frameLeftMarkerLayer = viewObj.GetValue(TJS_W("frameLeftMarkerLayer"), ncbTypedefs::Tag<tTJSVariant>(), 0, &frameLeftMarkerLayerHint);
       ncbPropAccessor frameLeftMarkerLayerObj(frameLeftMarkerLayer);
-      tjs_int mw = frameLeftMarkerLayerObj.GetValue(L"width", ncbTypedefs::Tag<tjs_int>(), 0, &widthHint);
-      tjs_int mh = frameLeftMarkerLayerObj.GetValue(L"height", ncbTypedefs::Tag<tjs_int>(), 0, &heightHint);
-      viewObj.FuncCall(0, L"operateRect", &operateRectHint, NULL,
+      tjs_int mw = frameLeftMarkerLayerObj.GetValue(TJS_W("width"), ncbTypedefs::Tag<tjs_int>(), 0, &widthHint);
+      tjs_int mh = frameLeftMarkerLayerObj.GetValue(TJS_W("height"), ncbTypedefs::Tag<tjs_int>(), 0, &heightHint);
+      viewObj.FuncCall(0, TJS_W("operateRect"), &operateRectHint, NULL,
                        frameTime * TIMELINE_FRAME_WIDTH, y, 
                        frameLeftMarkerLayer, 0, 0, mw, mh);
     }
     // 右マーカー描画
     if (rightMarker) {
-      tTJSVariant frameRightMarkerLayer = viewObj.GetValue(L"frameRightMarkerLayer", ncbTypedefs::Tag<tTJSVariant>(), 0, &frameRightMarkerLayerHint);
+      tTJSVariant frameRightMarkerLayer = viewObj.GetValue(TJS_W("frameRightMarkerLayer"), ncbTypedefs::Tag<tTJSVariant>(), 0, &frameRightMarkerLayerHint);
       ncbPropAccessor frameRightMarkerLayerObj(frameRightMarkerLayer);
-      tjs_int mw = frameRightMarkerLayerObj.GetValue(L"width", ncbTypedefs::Tag<tjs_int>(), 0, &widthHint);
-      tjs_int mh = frameRightMarkerLayerObj.GetValue(L"height", ncbTypedefs::Tag<tjs_int>(), 0, &heightHint);
-      viewObj.FuncCall(0, L"operateRect", &operateRectHint, NULL,
+      tjs_int mw = frameRightMarkerLayerObj.GetValue(TJS_W("width"), ncbTypedefs::Tag<tjs_int>(), 0, &widthHint);
+      tjs_int mh = frameRightMarkerLayerObj.GetValue(TJS_W("height"), ncbTypedefs::Tag<tjs_int>(), 0, &heightHint);
+      viewObj.FuncCall(0, TJS_W("operateRect"), &operateRectHint, NULL,
                        (frameTime + length) * TIMELINE_FRAME_WIDTH - mw, y, 
                        frameRightMarkerLayer, 0, 0, mw, mh);
     }
     // トゥイーンの破線描画
     tjs_int fromTime = frameTime + (leftMarker ? 1 : 0), toTime = frameTime + length - (rightMarker ? 1 : 0);
     if (frameType == TIMELINE_FRAME_TYPE_TWEEN) {
-      tTJSVariant dashLineApp = viewObj.GetValue(L"dashLineApp", ncbTypedefs::Tag<tTJSVariant>(), 0, &dashLineAppHint);
+      tTJSVariant dashLineApp = viewObj.GetValue(TJS_W("dashLineApp"), ncbTypedefs::Tag<tTJSVariant>(), 0, &dashLineAppHint);
       if (dashLineApp.Type() != tvtVoid) {
-        viewObj.FuncCall(0, L"drawLine", &drawLineHint, NULL,
+        viewObj.FuncCall(0, TJS_W("drawLine"), &drawLineHint, NULL,
                          dashLineApp, fromTime * TIMELINE_FRAME_WIDTH, y + TIMELINE_FRAME_HEIGHT / 2 - 1, toTime * TIMELINE_FRAME_WIDTH, y + TIMELINE_FRAME_HEIGHT / 2 - 1);
       } else {
         for (tjs_int i = fromTime; i < toTime; i++) {
-          viewObj.FuncCall(0, L"fillRect", &fillRectHint, NULL,
+          viewObj.FuncCall(0, TJS_W("fillRect"), &fillRectHint, NULL,
                            i * TIMELINE_FRAME_WIDTH, y + TIMELINE_FRAME_HEIGHT / 2 - 1, TIMELINE_FRAME_WIDTH / 2 - 2, 1, WIN_DARKEN2);
-          viewObj.FuncCall(0, L"fillRect", &fillRectHint, NULL,
+          viewObj.FuncCall(0, TJS_W("fillRect"), &fillRectHint, NULL,
                            i * TIMELINE_FRAME_WIDTH + TIMELINE_FRAME_WIDTH / 2, y + TIMELINE_FRAME_HEIGHT / 2 - 1, TIMELINE_FRAME_WIDTH / 2 - 2, 1, WIN_DARKEN2);
         }
       }
     }
     // フレーム数描画
     if (length > 2) {
-      tTJSVariant canvas = viewObj.GetValue(L"canvas", ncbTypedefs::Tag<tTJSVariant>(), 0, &canvasHint);
+      tTJSVariant canvas = viewObj.GetValue(TJS_W("canvas"), ncbTypedefs::Tag<tTJSVariant>(), 0, &canvasHint);
       ncbPropAccessor canvasObj(canvas);
       tjs_int fontHeight = TIMELINE_FRAME_HEIGHT - 4;
-      canvasObj.SetValue(L"fontHeight", fontHeight, 0, &fontHeightHint);
+      canvasObj.SetValue(TJS_W("fontHeight"), fontHeight, 0, &fontHeightHint);
       ttstr text(length);
       tTJSVariant textWidth;
-      tTJSVariant font = canvasObj.GetValue(L"font", ncbTypedefs::Tag<tTJSVariant>(), 0, &fontHint);
+      tTJSVariant font = canvasObj.GetValue(TJS_W("font"), ncbTypedefs::Tag<tTJSVariant>(), 0, &fontHint);
       ncbPropAccessor fontObj(font);
-      fontObj.FuncCall(0, L"getTextWidth", &getTextWidthHint, &textWidth,
+      fontObj.FuncCall(0, TJS_W("getTextWidth"), &getTextWidthHint, &textWidth,
                        text);
       tjs_int l = frameTime * TIMELINE_FRAME_WIDTH + ((length * TIMELINE_FRAME_WIDTH) - tjs_int(textWidth)) / 2;
       tjs_int t = y + int((TIMELINE_FRAME_HEIGHT - fontHeight) / 2) - 1;
-      viewObj.FuncCall(0, L"setClip", &setClipHint, NULL, 
+      viewObj.FuncCall(0, TJS_W("setClip"), &setClipHint, NULL, 
                        l - 1, t - 1, tjs_int(textWidth) + 2, fontHeight + 2);
-      viewObj.FuncCall(0, L"fillGradientRectLR", &fillGradientRectLRHint, NULL,
+      viewObj.FuncCall(0, TJS_W("fillGradientRectLR"), &fillGradientRectLRHint, NULL,
                        frameTime * TIMELINE_FRAME_WIDTH, y,
                        length * TIMELINE_FRAME_WIDTH - 1,
                        TIMELINE_FRAME_HEIGHT - 1,
                        leftColor, rightColor);
-      viewObj.FuncCall(0, L"setClip", &setClipHint, NULL); 
-      viewObj.FuncCall(0, L"drawText", &drawTextHint, NULL,
+      viewObj.FuncCall(0, TJS_W("setClip"), &setClipHint, NULL); 
+      viewObj.FuncCall(0, TJS_W("drawText"), &drawTextHint, NULL,
 		       l, t, text, tjs_int(WIN_DARKEN2 & 0xFFFFFF));
     }
     return;
@@ -258,15 +258,15 @@ void timeline_draw_timeline(tTJSVariant item, tTJSVariant view, tjs_int fromTime
 {
   ncbPropAccessor itemObj(item);
   ncbPropAccessor viewObj(view);
-  tTJSVariant layer = itemObj.GetValue(L"layer", ncbTypedefs::Tag<tTJSVariant>(), 0, &layerHint);
+  tTJSVariant layer = itemObj.GetValue(TJS_W("layer"), ncbTypedefs::Tag<tTJSVariant>(), 0, &layerHint);
   ncbPropAccessor layerObj(layer);
 
   iTJSDispatch2 *global = TVPGetScriptDispatch();
   ncbPropAccessor globalObj(global);
   global->Release();
 
-  tjs_int y = layerObj.GetValue(L"top", ncbTypedefs::Tag<tjs_int>(), 0, &topHint);
-  tTJSVariant frameList = itemObj.GetValue(L"frameList", ncbTypedefs::Tag<tTJSVariant>(), 0, &frameListHint);
+  tjs_int y = layerObj.GetValue(TJS_W("top"), ncbTypedefs::Tag<tjs_int>(), 0, &topHint);
+  tTJSVariant frameList = itemObj.GetValue(TJS_W("frameList"), ncbTypedefs::Tag<tTJSVariant>(), 0, &frameListHint);
   ncbPropAccessor frameListObj(frameList);
   tjs_int frameListCount = frameListObj.GetArrayCount();
 
@@ -279,9 +279,9 @@ void timeline_draw_timeline(tTJSVariant item, tTJSVariant view, tjs_int fromTime
     timeline_draw_bg(item, view, y, fromTime, toTime);
   } else {
     if (fromFrame < 0) 
-      timeline_draw_bg(item, view, y, fromTime, ncbPropAccessor(frameListObj.GetValue(0, ncbTypedefs::Tag<tTJSVariant>())).GetValue(L"time", ncbTypedefs::Tag<tjs_int>(), 0, &timeHint));
+      timeline_draw_bg(item, view, y, fromTime, ncbPropAccessor(frameListObj.GetValue(0, ncbTypedefs::Tag<tTJSVariant>())).GetValue(TJS_W("time"), ncbTypedefs::Tag<tjs_int>(), 0, &timeHint));
     if (toFrame == frameListCount - 1) 
-      timeline_draw_bg(item, view, y, ncbPropAccessor(frameListObj.GetValue(-1, ncbTypedefs::Tag<tTJSVariant>())).GetValue(L"time", ncbTypedefs::Tag<tjs_int>(), 0, &timeHint), toTime);
+      timeline_draw_bg(item, view, y, ncbPropAccessor(frameListObj.GetValue(-1, ncbTypedefs::Tag<tTJSVariant>())).GetValue(TJS_W("time"), ncbTypedefs::Tag<tjs_int>(), 0, &timeHint), toTime);
   }
 
   // フレームを描画
@@ -291,27 +291,27 @@ void timeline_draw_timeline(tTJSVariant item, tTJSVariant view, tjs_int fromTime
     tTJSVariant frame = frameListObj.GetValue(i, ncbTypedefs::Tag<tTJSVariant>());
     ncbPropAccessor frameObj(frame);
     tjs_int headTime, tailTime;
-    headTime = frameObj.GetValue(L"time", ncbTypedefs::Tag<tjs_int>(), 0, &timeHint);
+    headTime = frameObj.GetValue(TJS_W("time"), ncbTypedefs::Tag<tjs_int>(), 0, &timeHint);
     if (i < frameListCount - 1) {
       tTJSVariant nextFrame = frameListObj.GetValue(i + 1, ncbTypedefs::Tag<tTJSVariant>());
       ncbPropAccessor nextFrameObj(nextFrame);
-      tailTime = nextFrameObj.GetValue(L"time", ncbTypedefs::Tag<tjs_int>(), 0, &timeHint);
+      tailTime = nextFrameObj.GetValue(TJS_W("time"), ncbTypedefs::Tag<tjs_int>(), 0, &timeHint);
     } else 
       tailTime = headTime;
     if (! (tailTime < fromTime
 	   || headTime > toTime)) {
-      itemObj.FuncCall(0, L"drawFrame", &drawFrameHint, NULL,
+      itemObj.FuncCall(0, TJS_W("drawFrame"), &drawFrameHint, NULL,
 		       view, y, frame, tailTime - headTime);
     }
   }
   // 選択範囲描画
-  tTJSVariant selection = itemObj.GetValue(L"selection", ncbTypedefs::Tag<tTJSVariant>(), 0, &selectionHint);
+  tTJSVariant selection = itemObj.GetValue(TJS_W("selection"), ncbTypedefs::Tag<tTJSVariant>(), 0, &selectionHint);
   if (selection.Type() != tvtVoid) {
-    tjs_int TIMELINE_FRAME_WIDTH = itemObj.GetValue(L"TIMELINE_FRAME_WIDTH", ncbTypedefs::Tag<tjs_int>(), 0, &timeLineFrameWidthHint);
-    tjs_int TIMELINE_FRAME_HEIGHT = globalObj.GetValue(L"TIMELINE_FRAME_HEIGHT", ncbTypedefs::Tag<tjs_int>(), 0, &timelineFrameHeightHint);
+    tjs_int TIMELINE_FRAME_WIDTH = itemObj.GetValue(TJS_W("TIMELINE_FRAME_WIDTH"), ncbTypedefs::Tag<tjs_int>(), 0, &timeLineFrameWidthHint);
+    tjs_int TIMELINE_FRAME_HEIGHT = globalObj.GetValue(TJS_W("TIMELINE_FRAME_HEIGHT"), ncbTypedefs::Tag<tjs_int>(), 0, &timelineFrameHeightHint);
 
     ncbPropAccessor selectionObj(selection);
-    viewObj.FuncCall(0, L"colorRect", &colorRectHint, NULL,
+    viewObj.FuncCall(0, TJS_W("colorRect"), &colorRectHint, NULL,
 		     selectionObj.getIntValue(0) * TIMELINE_FRAME_WIDTH, y, (selectionObj.getIntValue(1) - selectionObj.getIntValue(0)) * TIMELINE_FRAME_WIDTH, TIMELINE_FRAME_HEIGHT, selectionObj.getIntValue(2) ? 0xFF0000 : 0, 128);
   }
 }
