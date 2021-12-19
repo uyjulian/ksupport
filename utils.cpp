@@ -293,7 +293,9 @@ public:
                                              ) {
     if (numparams > 1) {
       if ((int)*param[1] != TJS_HIDDENMEMBER) {
+#if 0
 	const tjs_char *key = param[0]->GetString();
+#endif
 	dst.PropSetByNum(0, index++, param[0], NULL);
       }
     }
@@ -341,7 +343,9 @@ public:
                                              ) {
     if (numparams > 1) {
       if ((int)*param[1] != TJS_HIDDENMEMBER) {
+#if 0
 	const tjs_char *key = param[0]->GetString();
+#endif
 	dst.PropSetByNum(0, index++, param[2], NULL);
       }
     }
@@ -545,7 +549,9 @@ tTJSVariant sliceArray(tTJSVariant v, tjs_int from, tjs_int size)
   tTJSVariantClosure &src = v.AsObjectClosureNoAddRef();
   tTJSVariant srcCount;
   (void)src.PropGet(0, L"count", &countHint, &srcCount, NULL);
+#if 0
   tjs_int count = srcCount;
+#endif
 
   tTJSVariant result = createArray();
   tTJSVariantClosure &dst = result.AsObjectClosureNoAddRef();
